@@ -20,8 +20,6 @@ export default function ImportExcelModal() {
 
     const data = await res.json();
     setLoading(false);
-
-    // Menutup modal pakai checkbox
     document.getElementById('import_excel_modal').checked = false;
     setFile(null);
 

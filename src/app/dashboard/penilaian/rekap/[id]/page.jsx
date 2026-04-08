@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import PohonCard from "@/app/components/PohonCard";
 import PenilaianModal from "@/app/components/PenilaianModal";
 import RekapTable from "@/app/components/RekapTable";
+import { FiArrowLeft, FiList, FiGrid, FiFileText } from "react-icons/fi";
+import Link from "next/link";
 
 export default function Page() {
   const { id: rekapId } = useParams();
@@ -28,9 +30,10 @@ export default function Page() {
     hasil_tidak_dipungut: "Hasil Tidak Dipungut",
     talang_sadap_mampet: "Talang Sadap Mampet",
   };
-const pointOptions = {
+
+  const pointOptions = {
     luka_kayu: [
-      { label: "Tidak Ada (0 Poin)", value: 3 },
+      { label: "Tidak Ada (0 Poin)", value: 0 },
       { label: "Luka Kecil (3 Poin)", value: 3 },
       { label: "Luka Sedang (5 Poin)", value: 5 },
       { label: "Luka Besar (7 Poin)", value: 7 },
@@ -43,7 +46,6 @@ const pointOptions = {
     pemakaian_kulit: [
       { label: "Boros (6 Poin)", value: 6 },
       { label: "Sangat Boros (10 Poin)", value: 10 },
-      // { label: "Berlebihan (10 Poin)", value: 10 },
     ],
     teknik_ska: [
       { label: "Tidak Pakai Tangga (3 Poin)", value: 3 },
@@ -58,20 +60,18 @@ const pointOptions = {
       { label: "TAS (5 Poin)", value: 5 },
       { label: "TAP (5 Poin)", value: 5 },
       { label: "TEBAL TATAL (10 Poin)", value: 10 },
-      // { label: "Benar (0 Poin)", value: 0 },
     ],
     sudut_sadap: [
       { label: ">45 Derajat (3 Poin)", value: 3 },
       { label: "<35 Derajat (3 Poin)", value:  3},
       { label: "Bergelombang (2 Poin)", value: 2 },
-      // { label: "Benar (0 Poin)", value: 0 },
     ],
     pengambilan_scrap: [
-      { label: "Diambil (5 Poin) (5 Poin)", value: 0 },
+      { label: "Diambil (0 Poin)", value: 0 },
       { label: "Tidak diambil (2 Poin)", value: 2 },
     ],
     peralatan_tidak_lengkap: [
-      { label: "Talang (2 Poin) ", value: 2 },
+      { label: "Talang (2 Poin)", value: 2 },
       { label: "Mangkok (3 Poin)", value: 3},
       { label: "Talang Pancing (1 Poin)", value: 1 },
     ],
@@ -104,13 +104,23 @@ const pointOptions = {
         console.error("Gagal fetch rekap:", err);
       }
     }
-
     if (rekapId) fetchRekap();
   }, [rekapId]);
 
-  const handleOpenModal = (pohon) => {
+  const handleOpenModal = (pohon, existingAssessment = null) => {
     setSelectedPohon(pohon);
-    setForm({});
+    if (existingAssessment) {
+      // Filter out metadata fields (id, created_at, etc) and only keep scores
+      const initialForm = {};
+      Object.keys(labelMap).forEach(key => {
+        if (existingAssessment[key] !== undefined) {
+          initialForm[key] = existingAssessment[key];
+        }
+      });
+      setForm(initialForm);
+    } else {
+      setForm({});
+    }
     setShowModal(true);
   };
 
@@ -133,35 +143,85 @@ const pointOptions = {
 
     if (response.ok) {
       setShowModal(false);
-      location.reload(); // pertimbangkan fetch ulang data daripada reload full page
+      window.location.reload();
     } else {
       alert("Gagal menyimpan penilaian.");
     }
   };
 
-  if (!rekap) return <div className="text-center mt-10">Memuat data rekap...</div>;
+  if (!rekap) return (
+    <div className="flex flex-col items-center justify-center min-h-[400px]">
+      <span className="loading loading-spinner loading-lg text-emerald-600"></span>
+      <p className="mt-4 text-stone-500 font-medium">Memuat data penilaian...</p>
+    </div>
+  );
 
   return (
-    <div className="p-4">
-      {console.log(rekap  )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {rekap.tabel_blok.tabel_pohon.map((pohon) => (
-          <PohonCard
-            key={pohon.id}
-            pohon={pohon}
-            rekapId={rekap.id}
-            onPenilaian={handleOpenModal}
-          />
-        ))}
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/rekap" className="btn btn-circle btn-ghost bg-white shadow-sm border border-stone-100 text-stone-600">
+            <FiArrowLeft />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black text-stone-800">Detail Penilaian</h1>
+            <p className="text-stone-500 text-sm">Blok {rekap.tabel_blok.nama_blok} • {rekap.tanggal_penilaian}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+           <button 
+             className={`btn rounded-2xl normal-case h-auto py-3 min-h-0 shadow-sm border-stone-200 ${!showRekap ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-stone-600'}`}
+             onClick={() => setShowRekap(false)}
+           >
+             <FiGrid className="mr-2" /> Grid Pohon
+           </button>
+           <button 
+             className={`btn rounded-2xl normal-case h-auto py-3 min-h-0 shadow-sm border-stone-200 ${showRekap ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-stone-600'}`}
+             onClick={() => setShowRekap(true)}
+           >
+             <FiList className="mr-2" /> Tabel Rekap
+           </button>
+        </div>
       </div>
 
-      <div className="mb-6">
-        <button className="btn btn-success" onClick={() => setShowRekap(!showRekap)}>
-          {showRekap ? "Tutup Rekap" : "Rekap Data"}
-        </button>
+      {/* Info Card Summary */}
+      <div className="bg-emerald-900 rounded-3xl p-6 text-white grid grid-cols-1 sm:grid-cols-3 gap-6 shadow-xl shadow-emerald-200/20 relative overflow-hidden">
+          <div className="relative z-10">
+            <p className="text-emerald-300 text-[10px] font-bold uppercase tracking-widest mb-1">Penyadap</p>
+            <p className="text-xl font-bold">{rekap.tabel_penyadap?.nama_penyadap || '-'}</p>
+          </div>
+          <div className="relative z-10">
+            <p className="text-emerald-300 text-[10px] font-bold uppercase tracking-widest mb-1">Penilai</p>
+            <p className="text-xl font-bold">{rekap.profiles?.nama_penilai || '-'}</p>
+          </div>
+          <div className="relative z-10">
+            <p className="text-emerald-300 text-[10px] font-bold uppercase tracking-widest mb-1">Total Skor</p>
+            <p className="text-3xl font-black">{rekap.total_score ?? '-'}</p>
+          </div>
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-emerald-800 rounded-full blur-3xl opacity-50"></div>
       </div>
 
-      {showRekap && <RekapTable rekap={rekap} labelMap={labelMap} />}
+      {/* Content */}
+      <div className="transition-all duration-300">
+        {!showRekap ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rekap.tabel_blok.tabel_pohon.map((pohon) => (
+              <PohonCard
+                key={pohon.id}
+                pohon={pohon}
+                rekapId={rekap.id}
+                onPenilaian={handleOpenModal}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden p-2">
+            <RekapTable rekap={rekap} labelMap={labelMap} onPenilaian={handleOpenModal} />
+          </div>
+        )}
+      </div>
 
       {showModal && (
         <PenilaianModal

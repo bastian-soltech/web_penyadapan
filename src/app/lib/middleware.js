@@ -9,16 +9,12 @@ export async function updateSession(request) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value);
           });
-
           supabaseResponse = NextResponse.next({ request });
-
           cookiesToSet.forEach(({ name, value, options }) => {
             supabaseResponse.cookies.set(name, value, options);
           });
@@ -27,19 +23,37 @@ export async function updateSession(request) {
     }
   );
 
-  // Jangan menulis kode di antara createServerClient dan auth.getUser
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/')    
-  ) {
+  const path = request.nextUrl.pathname;
+  if (path === '/auth/confirm') {
+    return NextResponse.next(); 
+  }
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  console.log('user',user)
+ 
+  if (!user && path !== '/' && !path.startsWith('/login')) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
   }
+
+ 
+  const hasUsername = user?.user_metadata;
+  console.log('HAS USER', hasUsername)
+
+  if (user && !hasUsername && path !== '/complete-profile') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/complete-profile';
+    return NextResponse.redirect(url);
+  }
+
+  
+  // if (user && hasUsername && path === '/complete-profile') {
+  //   const url = request.nextUrl.clone();
+  //   url.pathname = '/dashboard';
+  //   return NextResponse.redirect(url);
+  // }
+  
 
   return supabaseResponse;
 }

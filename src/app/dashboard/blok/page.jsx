@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FiEdit2, FiTrash2, FiPlus, FiSearch } from 'react-icons/fi'
+import { FiEdit2, FiTrash2, FiPlus, FiSearch, FiLayers } from 'react-icons/fi'
 import { useRouter } from 'next/navigation'
+import FormModal from '@/app/components/FormModal'
 
 export default function BlokPage() {
   const router = useRouter()
@@ -14,7 +15,6 @@ export default function BlokPage() {
   const [currentBlokId, setCurrentBlokId] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Fetch data with better error handling
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -25,12 +25,10 @@ export default function BlokPage() {
         setBlokList(data?.data || [])
       } catch (error) {
         console.error('Fetch error:', error)
-        alert('Gagal memuat data blok')
       } finally {
         setIsLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
@@ -47,7 +45,7 @@ export default function BlokPage() {
       const endpoint = editMode
         ? `/api/get-blok/update/${currentBlokId}`
         : '/api/get-blok/create'
-      
+
       const method = editMode ? 'PATCH' : 'POST'
 
       const res = await fetch(endpoint, {
@@ -58,23 +56,17 @@ export default function BlokPage() {
 
       const result = await res.json()
 
-      if (!res.ok) {
-        throw new Error(result.message || 'Gagal menyimpan data')
-      }
+      if (!res.ok) throw new Error(result.message || 'Gagal menyimpan data')
 
-      alert(result.message)
-      
-      // Refresh data after successful operation
+      // Refresh data
       const refreshRes = await fetch('/api/get-blok/all')
       const refreshData = await refreshRes.json()
       setBlokList(refreshData?.data || [])
 
-      // Reset form and close modal
       setFormData({ nama_blok: '' })
       setEditMode(false)
       setCurrentBlokId(null)
       document.getElementById('blok-modal')?.close()
-
     } catch (error) {
       alert(error.message || 'Terjadi kesalahan')
     } finally {
@@ -84,10 +76,7 @@ export default function BlokPage() {
 
   const handleEdit = (blok) => {
     if (!blok) return
-    
-    setFormData({ 
-      nama_blok: blok.nama_blok || '' 
-    })
+    setFormData({ nama_blok: blok.nama_blok || '' })
     setEditMode(true)
     setCurrentBlokId(blok.id)
     document.getElementById('blok-modal')?.showModal()
@@ -95,19 +84,11 @@ export default function BlokPage() {
 
   const handleDelete = async (id) => {
     if (!confirm('Apakah Anda yakin ingin menghapus blok ini?')) return
-    
     try {
-      const res = await fetch(`/api/get-blok/delete/${id}`, {
-        method: 'DELETE'
-      })
+      const res = await fetch(`/api/get-blok/delete/${id}`, { method: 'DELETE' })
       const result = await res.json()
-
-      if (!res.ok) {
-        throw new Error(result.message || 'Gagal menghapus data')
-      }
-
+      if (!res.ok) throw new Error(result.message || 'Gagal menghapus data')
       setBlokList(prev => prev.filter(b => b.id !== id))
-      alert(result.message)
     } catch (error) {
       alert(error.message || 'Terjadi kesalahan')
     }
@@ -118,78 +99,77 @@ export default function BlokPage() {
   )
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Manajemen Blok</h1>
-          <p className="text-gray-600">Kelola data blok</p>
+          <h1 className="text-3xl font-black text-stone-800 flex items-center gap-3">
+            <FiLayers className="text-emerald-600" /> Manajemen Blok
+          </h1>
+          <p className="text-stone-500">Kelola pembagian area atau blok perkebunan.</p>
         </div>
 
         <div className="flex gap-3 w-full md:w-auto">
-          {/* Search Input */}
           <div className="relative flex-1 md:w-64">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiSearch className="text-gray-400" />
-            </div>
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              placeholder="Cari nama blok..."
+              className="pl-12 pr-4 py-3 w-full bg-white border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all shadow-sm"
+              placeholder="Cari blok..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          {/* Add Button */}
           <button
-            className="btn btn-primary gap-2"
+            className="btn btn-primary bg-emerald-600 hover:bg-emerald-700 border-none px-6 rounded-2xl normal-case h-auto py-3 min-h-0 text-white shadow-lg shadow-emerald-200"
             onClick={() => {
               setEditMode(false)
               setFormData({ nama_blok: '' })
               document.getElementById('blok-modal')?.showModal()
             }}
-            disabled={isLoading}
           >
-            <FiPlus /> Tambah Blok
+            <FiPlus className="text-lg" /> <span>Tambah Blok</span>
           </button>
         </div>
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="mt-2 text-gray-500">Memuat data...</p>
+          <div className="p-12 text-center">
+            <span className="loading loading-spinner loading-lg text-emerald-600"></span>
+            <p className="mt-4 text-stone-400 font-medium">Memuat data blok...</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="table">
+            <table className="table w-full">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="w-12">No</th>
-                  <th>Nama Blok</th>
-                  <th className="w-40">Aksi</th>
+                <tr className="bg-stone-50/50 border-b border-stone-100">
+                  <th className="px-6 py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest w-20">No</th>
+                  <th className="px-6 py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest">Nama Blok</th>
+                  <th className="px-6 py-4 text-stone-400 font-bold uppercase text-[10px] tracking-widest text-right w-40">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-stone-50">
                 {filteredBlokList.length > 0 ? (
                   filteredBlokList.map((blok, index) => (
-                    <tr key={blok.id} className="hover:bg-gray-50">
-                      <td>{index + 1}</td>
-                      <td className="font-medium">{blok.nama_blok}</td>
-                      <td>
-                        <div className="flex gap-2">
+                    <tr key={blok.id} className="hover:bg-stone-50/30 transition-colors">
+                      <td className="px-6 py-4 font-medium text-stone-400">{index + 1}</td>
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-stone-700">{blok.nama_blok}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2 justify-end">
                           <button
                             onClick={() => handleEdit(blok)}
-                            className="btn btn-sm btn-outline btn-warning"
+                            className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 flex items-center justify-center transition-colors"
                           >
                             <FiEdit2 />
                           </button>
                           <button
                             onClick={() => handleDelete(blok.id)}
-                            className="btn btn-sm btn-outline btn-error"
+                            className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors"
                           >
                             <FiTrash2 />
                           </button>
@@ -199,8 +179,14 @@ export default function BlokPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" className="text-center py-8 text-gray-500">
-                      {searchTerm ? 'Tidak ditemukan hasil pencarian' : 'Belum ada data blok'}
+                    <td colSpan="3" className="text-center py-20">
+                      <div className="max-w-xs mx-auto">
+                        <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                          🔍
+                        </div>
+                        <p className="text-stone-500 font-bold">Tidak ada data ditemukan</p>
+                        <p className="text-stone-400 text-sm">Coba cari dengan kata kunci lain atau tambah data baru.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -209,60 +195,33 @@ export default function BlokPage() {
           </div>
         )}
       </div>
-
       {/* Modal Form */}
-      <dialog id="blok-modal" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">
-            {editMode ? 'Edit Blok' : 'Tambah Blok Baru'}
-          </h3>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Nama Blok</span>
-              </label>
-              <input
-                type="text"
-                name="nama_blok"
-                className="input input-bordered w-full"
-                value={formData.nama_blok}
-                onChange={handleInputChange}
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div className="modal-action">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => document.getElementById('blok-modal')?.close()}
-                disabled={isSubmitting}
-              >
-                Batal
-              </button>
-              <button 
-                type="submit" 
-                className="btn btn-primary"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <span className="loading loading-spinner"></span>
-                ) : editMode ? (
-                  'Simpan Perubahan'
-                ) : (
-                  'Tambah Blok'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+     <FormModal
+  id="blok-modal"
+  title={editMode ? 'Edit Blok' : 'Blok Baru'}
+  description="Masukkan detail informasi blok produksi di bawah ini."
+  isSubmitting={isSubmitting}
+  submitLabel={editMode ? 'Simpan Perubahan' : 'Tambah Blok'}
+  onSubmit={handleSubmit}
+  onClose={() => document.getElementById('blok-modal').close()}
+>
+  {/* Input Khusus Nama Blok */}
+  <div className="form-control w-full">
+    <label className="label">
+      <span className="label-text font-bold text-stone-600">Nama Blok</span>
+    </label>
+    <input
+      type="text"
+      name="nama_blok"
+      placeholder="Contoh: Blok A1"
+      className="input w-full bg-stone-50 border border-stone-200 text-stone-900 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all h-14 px-4"
+      value={formData.nama_blok}
+      onChange={handleInputChange}
+      required
+      disabled={isSubmitting}
+    />
+  </div>
+</FormModal>
     </div>
   )
 }

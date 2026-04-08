@@ -7,7 +7,7 @@ export async function PUT(request, { params }) {
 
   try {
     const body = await request.json();
-
+    
     const { id_blok, id_penilai, id_penyadap, total_score, tanggal_penilaian} = body;
 
     const { data, error } = await supabase

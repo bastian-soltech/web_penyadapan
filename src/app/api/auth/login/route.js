@@ -11,7 +11,7 @@ export async function POST(request) {
   const { email, password } = body;
 
     const {data,error}= await supabase.from('tabel_penilai')
-  const user = users.find(u => u.username === username);
+  // const user = users.find(u => u.username === username);
   if (!user) {
     return NextResponse.json({ message: 'User tidak ditemukan' }, { status: 401 });
   }

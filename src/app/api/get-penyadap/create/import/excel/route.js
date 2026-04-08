@@ -5,11 +5,9 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     const file = formData.get('file');
-
     if (!file) {
       return NextResponse.json({ message: 'File tidak ditemukan' }, { status: 400 });
     }
-
     const arrayBuffer = await file.arrayBuffer();
     const data = new Uint8Array(arrayBuffer);
     const workbook = XLSX.read(data, { type: 'array' });
@@ -17,8 +15,6 @@ export async function POST(req) {
     const sheet = workbook.Sheets[sheetName];
 
     const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-    // Pastikan ada kolom "nama_penyadap"
     const cleanedData = jsonData.map(row => ({
       nama_penyadap: row.nama_penyadap || row.Nama || row.nama || '',
     })).filter(item => item.nama_penyadap !== '');

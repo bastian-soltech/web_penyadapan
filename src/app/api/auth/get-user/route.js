@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 
 export async function GET() {
-  // Ambil semua blok beserta pohon-pohonnya (relasi 1:n)
+  
 const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase

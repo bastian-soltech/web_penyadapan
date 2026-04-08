@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "web-penyadapan-pohon",
+  "private_key_id": "efddfda34f6cff7fbf41fdd3332939e4b05f2bae",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNAtQRCD+V8dbL\nJ7ZYcsG8GKKD22RiEvZlIN9frBul8fVPPyoCvXQOThF15a7uoqIpscDLHi7pUAHw\nIHUaeig1Ar1cLTLSFOPrOfNU2t1rE3+aRJbJGzH/de3LtFRk2ThjzbkMZAwrvvt2\n7+ZMxusME+xh8ZYJq86DZhLoUFKcX9N5UsXS7iWytFh6HDPBqeC1+AhmDwZLctrT\ng/FEjHFU1Mukttu8+TH57unTw3UcHladXk86Y/znJZArnWz36oSahgyuTpKDIAqW\ndj6Es5Df0ZHqRiceqapKhagZtw7ytZePASwQWD28xanWhcyL7ma4wg/1P7PVRr6M\nD7RQdgeNAgMBAAECggEAJKEcPdzQ65wVqh+y01PRrKdkJhYFdgZ4UrJQZtor6Hb2\nQw4AlhO+kC2/reZ3Xnjda4Cwdzox3Irohbxu3+eylmIibj0/Js0HuggVI3SlehO2\nSVx26oC66q9p6OsT5x7uldp0dTPM/uX1LReI+O/ToElRA2D0U08Iq26J80sir4CX\nkCWByWi/shVtBdH6sEfmVr48qg3jelVeyPZbwZO2+D/5oM4FMh1tKyGqebLJiJVY\nRkDNTT8dVq0O6TYED/kBYjPrRAeupbgx2XWTmNCnSptCgmuBdL9teU8wAqBpT98e\nNt2+kFaoVDLaNr7QxAmXUe3O7e1mafCgjJzp+Y1g0QKBgQD0peknkKNcsQPMSnTE\n0xFb1ZKbvHvawOJt+UOATFYTtqL1WR8rreCtxzmm7f6snr/BIW7YkU+eQ4tsnLqC\nI0dAg1ZgNegJ6Sq3Zyu/ZCZI5Y5G+HCWmbiMQBAvjwhOeuDfmjZevre9Lx5ynK9j\nKCn4x2amRlRfI+5b5bjfuVF+2QKBgQDWhhVDSmFpIcJoMeflHZDMhy8p3aaBwGSn\nWX0mH9mRpAh/YqeBW4ZTdERDHn8RuKcM8zoZ6ElA4LMJ2lBdy5iZpTAk+l/wKqjI\nUjUJh9jeZb/JZ6bCakWk6ruTw8R+2i5rPaDZaDTIEaqeBY1x7iZShAfH1FGmtrj5\neXpa789F1QKBgGK0IWpGD7LQ9DBTBeN3KLS9aSYOGIY8dd5ax+IWalAPypVkPJA5\n2cEi9N6lfK+WaNT5sSgNEGtQ4wqR/SmOJCwiERJGDXUaLpLKPDs+o7ebbhiyGXKZ\nWHy1SBJ4CajoKJvuMuts1OKuBQHGt3gw9yYZBRAmpdmwvHU1LK6OrROZAoGADrha\noyhqcL1ZSq8J+4XA1tf724KTF1otTfJtDP2ofz7jOmJ5nf26xOU4feaMz5l9FP1n\nojl3NVV105pAY39B9GEKYa8wgBldRYmmjAXfUrtmoppTLgn+x2c4AdawGAg+oSs0\na1akMIpNy9QTtZqi1IyswACIrcjh/nRgefb0oRUCgYBf2FNictJqNuEFF+abXjIL\nHB5/jCwSQCGJbipkt/mzHcSIs9yWFxLrGn5TVeWa/43WYdvu7/nnWuTd+yT1pwdE\ntC/nXer7/9NVPcmjEeEhUnh1y/tUK2VutssXh8xjfcPjXHkIpkxoXyqI4uFNlCmN\nMhsTmdKa6WDGwD4CIgCVoQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "datagrafik@web-penyadapan-pohon.iam.gserviceaccount.com",
+  "client_id": "105114938875860309461",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/datagrafik%40web-penyadapan-pohon.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
