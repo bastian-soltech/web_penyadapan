@@ -52,7 +52,7 @@ export default function Page(){
         <div className="card-body p-8 sm:p-10">
           <div className="text-center space-y-2 mb-8">
             <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
-              🌿
+              <img src="/images/logo.png" alt="" />
             </div>
             <h2 className="text-3xl font-black text-emerald-900 leading-tight">Lengkapi Profil</h2>
             <p className="text-stone-500 text-sm">Silakan atur identitas penilai Anda di Kebun Glantangan.</p>
@@ -78,7 +78,7 @@ export default function Page(){
                 <input
                   type="text"
                   required
-                  className="input bg-stone-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 w-full pl-12 h-14 transition-all"
+                  className="input text-stone-900 bg-stone-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 w-full pl-12 h-14 transition-all"
                   value={form.username}
                   onChange={e => setForm({ ...form, username: e.target.value })}
                   placeholder="Masukkan Nama Lengkap"
@@ -91,7 +91,7 @@ export default function Page(){
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-bold text-stone-600">Password Baru (Opsional)</span>
+                <span className="label-text font-bold text-stone-600">Password Baru</span>
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
@@ -103,8 +103,8 @@ export default function Page(){
                   type="password"
                   value={form.password}
                   onChange={e => setForm({ ...form, password: e.target.value })}
-                  className="input bg-stone-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 w-full pl-12 h-14 transition-all"
-                  placeholder="Kosongkan jika tetap"
+                  className="input text-stone-900 bg-stone-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 w-full pl-12 h-14 transition-all"
+                
                   disabled={isLoading}
                 />
               </div>

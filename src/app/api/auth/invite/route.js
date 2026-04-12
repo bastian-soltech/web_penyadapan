@@ -17,7 +17,7 @@ export async function POST(request) {
     if (authError || !user) {
       return NextResponse.json({ message: 'Tidak diizinkan' }, { status: 401 });
     }
-\
+
     const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email);
 
     if (error) {

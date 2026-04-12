@@ -3,7 +3,8 @@ import {
   HiOutlineChartBar, 
   HiOutlineUserGroup, 
   HiOutlineMap, 
-  HiOutlineClipboardList 
+  HiOutlineClipboardList,
+  HiOutlineDatabase
 } from "react-icons/hi";
 import { RiTreeFill } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
@@ -27,6 +28,7 @@ export default async function DashboardLayout({ children }) {
     { path: "/dashboard/penyadap", icon: <HiOutlineUserGroup />, name: "Data Penyadap" },
     { path: "/dashboard/pohon", icon: <RiTreeFill />, name: "Data Pohon" },
     { path: "/dashboard/rekap", icon: <HiOutlineClipboardList />, name: "Rekap Penilaian" },
+    { path: "/dashboard/pengaturan", icon: <HiOutlineDatabase />, name: "Integrasi Data" },
     { path: "/dashboard/profile", icon: <CgProfile />, name: "Profile" },
   ];
 

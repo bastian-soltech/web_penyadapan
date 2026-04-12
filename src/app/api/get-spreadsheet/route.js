@@ -1,14 +1,27 @@
 // /app/api/sheet/route.js
-import { google } from 'googleapis'
+
 import { NextResponse } from 'next/server'
-import serviceAccount from '../../lib/web-penyadapan-pohon-efddfda34f6c.json' 
+import supabaseServer from '@/app/lib/supabaseServer'
 
 export async function GET() {
-  // Update Spreadsheet ID sesuai instruksi terbaru
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/1hFt__pKQTPMb9CAA6bblq-sXtf3wttrPkK0CPRNeLDk/values/Rank!A:Z/?key=AIzaSyDMAggxPK5ju16Ni_WVsRUk1uQpSMsNo2Y`
-  
-  try {
-    const res = await fetch(url)
+  const supabase = await supabaseServer()
+
+  // Ambil Spreadsheet ID dari database
+  const { data: settingData, error: settingError } = await supabase
+    .from('tabel_pengaturan')
+    .select('nilai')
+    .eq('kunci', 'spreadsheet_id')
+    .single()
+
+  if (settingError || !settingData?.nilai) {
+    console.error('Database Fetch Error:', settingError);
+    return NextResponse.json({ status: 'error', message: 'Spreadsheet ID not found in settings' }, { status: 404 });
+  }
+
+  const spreadsheetId = settingData.nilai;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Rank!A:Z/?key=AIzaSyDMAggxPK5ju16Ni_WVsRUk1uQpSMsNo2Y`
+
+  try {    const res = await fetch(url)
     const data = await res.json()
 
     const rows = data.values;
