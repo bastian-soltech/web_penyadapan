@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import supabase from '@/app/lib/supabaseClient';
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, props) {
+  const params = await props.params;
   const { id } = params;
 
   // 1. Hapus penilaian yang merujuk ke pohon ini

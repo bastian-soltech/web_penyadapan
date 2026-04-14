@@ -2,7 +2,8 @@ import supabase from '@/app/lib/supabaseClient';
 import { NextResponse } from 'next/server';
 
 // Fungsi PATCH untuk update data blok
-export async function PUT(request, { params }) {
+export async function PUT(request, props) {
+  const params = await props.params;
   const { id } = params;
 
   try {
