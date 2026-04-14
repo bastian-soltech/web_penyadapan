@@ -12,7 +12,7 @@ import {
 
 export default function ProfileTab() {
   const details = [
-    { label: "Lokasi", value: "Desa Glantangan, Kec. Banyuwangi, Jawa Timur", icon: <RiMapPinRangeLine /> },
+    { label: "Lokasi", value: "Jalan Padang Golf No. 14, Dusun Glantangan, Desa Pondokrejo, Kecamatan Tempurejo, Kabupaten Jember, Jawa Timur", icon: <RiMapPinRangeLine /> },
     { label: "Luas Area", value: "4,482.62 Hektar", icon: <RiRuler2Line /> },
     { label: "Didirikan", value: "1985", icon: <RiCalendarEventLine /> },
     { label: "Komoditas", value: "Karet, Kayu, Kopi Arabika", icon: <RiPlantLine /> },

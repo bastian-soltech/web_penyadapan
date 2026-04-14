@@ -18,13 +18,8 @@ import ProduksiTab from "./components/homeTab/Produksi";
 import PetaTab from "./components/homeTab/Peta";
 import supabase from "./lib/supabaseClient";
 
-/**
- * Aesthetic Direction: Organic / Refined
- * Differentiator: Floating Glassmorphism Tab Bar with Micro-interactions
- * Logic: Session-aware navigation for the Login/Dashboard portal.
- */
-
 export default function Home() {
+
   const [tab, setTab] = useState("profile");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
@@ -40,7 +35,7 @@ export default function Home() {
   const tabs = [
     { id: "profile", label: "Profil Kebun", icon: <RiPlantLine /> },
     { id: "produksi", label: "Produksi", icon: <RiBarChartGroupedLine /> },
-    { id: "peta", label: "Peta Kebun", icon: <RiMapPin2Line /> },
+    // { id: "peta", label: "Peta Kebun", icon: <RiMapPin2Line /> },
     { id: "kontak", label: "Kontak", icon: <RiCustomerService2Line /> },
     { 
       id: "login", 

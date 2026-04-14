@@ -1,6 +1,7 @@
 import supabaseServer from '../lib/supabaseServer';
 import { redirect } from 'next/navigation';
 import { FiMapPin, FiUsers, FiLayers, FiCheckSquare, FiTrendingUp } from 'react-icons/fi';
+import ProduksiTab from '../components/homeTab/Produksi';
 
 export default async function DashboardPage() {
   const supabase = await supabaseServer();
@@ -68,6 +69,18 @@ export default async function DashboardPage() {
         ))}
       </div>
 
+      {/* Grafik Produksi */}
+      <div className="bg-white rounded-[2rem] p-1 border border-stone-100 shadow-sm overflow-hidden">
+        <div className="bg-stone-50/50 p-6 border-b border-stone-50">
+           <h2 className="text-xl font-bold text-stone-800 flex items-center gap-2">
+              <FiTrendingUp className="text-emerald-600" /> Ringkasan Produksi Kebun
+           </h2>
+        </div>
+        <div className="p-6">
+          <ProduksiTab />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Profile Card */}
         <div className="lg:col-span-2 space-y-6">
@@ -80,7 +93,7 @@ export default async function DashboardPage() {
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 {[
-                  { label: 'Lokasi', value: 'Desa Glantangan, Jember' },
+                  { label: 'Lokasi', value: 'Jalan Padang Golf No. 14, Dusun Glantangan, Desa Pondokrejo, Kecamatan Tempurejo, Kabupaten Jember, Jawa Timur' },
                   { label: 'Luas Area', value: '4,482.62 Hektar' },
                   { label: 'Didirikan', value: 'Tahun 1985' },
                 ].map((item, i) => (
