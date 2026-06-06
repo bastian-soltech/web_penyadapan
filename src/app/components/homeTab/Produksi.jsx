@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell
 } from "recharts";
 import { useState, useEffect } from "react";
 import { 
@@ -15,13 +16,15 @@ import {
   RiLineChartLine, 
   RiPulseLine, 
   RiCalendarLine,
-  RiBarChartGroupedLine
+  RiBarChartGroupedLine,
+  RiFilter3Line
 } from "react-icons/ri";
 
 export default function ProduksiTab() {
   const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [viewType, setViewType] = useState("hari_ini"); // hari_ini, bulan_ini, sd_hari_ini
+  const [selectedAfdeling, setSelectedAfdeling] = useState("SEMUA AFDELING");
 
   useEffect(() => {
     fetchData();
@@ -48,6 +51,13 @@ export default function ProduksiTab() {
     return parseFloat(clean) || 0;
   };
 
+  const getStatusColor = (percent) => {
+    const p = parseNum(percent);
+    if (p >= 100) return { bg: "bg-emerald-600", text: "text-emerald-600", hex: "#10b981", bar: "bg-emerald-500" };
+    if (p > 80) return { bg: "bg-amber-500", text: "text-amber-500", hex: "#f59e0b", bar: "bg-amber-500" };
+    return { bg: "bg-red-500", text: "text-red-500", hex: "#ef4444", bar: "bg-red-500" };
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm animate-in fade-in duration-500">
@@ -58,21 +68,33 @@ export default function ProduksiTab() {
   }
 
   const currentData = rawData?.[viewType] || [];
-  const chartData = currentData.map(item => ({
+  
+  // Get unique afdeling list
+  const afdelingList = ["SEMUA AFDELING", ...new Set(currentData.map(item => item.afdeling))];
+
+  // Filtered data for chart
+  const filteredData = selectedAfdeling === "SEMUA AFDELING" 
+    ? currentData 
+    : currentData.filter(item => item.afdeling === selectedAfdeling);
+
+  const chartData = filteredData.map(item => ({
     name: item.afdeling,
     aktual: parseNum(item.realisasi),
-    target: parseNum(item.target)
+    target: parseNum(item.target),
+    persen: parseNum(item.persen)
   }));
 
-  const totalCurrent = rawData?.total?.[viewType];
+  // Logic for KPI stats based on filter
+  const activeStatSource = selectedAfdeling === "SEMUA AFDELING" 
+    ? rawData?.total?.[viewType] 
+    : currentData.find(item => item.afdeling === selectedAfdeling);
 
   const stats = [
     { 
-      label: `TOTAL PRODUKSI (${viewType.replace(/_/g, ' ').toUpperCase()})`, 
-      value: `${totalCurrent?.realisasi || '0'} Kg`, 
-      target: `Target: ${totalCurrent?.target || '0'} Kg`, 
-      percent: totalCurrent?.persen || "0", 
-      color: "emerald",
+      label: selectedAfdeling === "SEMUA AFDELING" ? `TOTAL PRODUKSI (${viewType.replace(/_/g, ' ').toUpperCase()})` : `PRODUKSI ${selectedAfdeling}`, 
+      value: `${activeStatSource?.realisasi || '0'} Kg`, 
+      target: `Target: ${activeStatSource?.target || '0'} Kg`, 
+      percent: activeStatSource?.persen || "0", 
       icon: <RiPulseLine /> 
     },
     { 
@@ -80,15 +102,13 @@ export default function ProduksiTab() {
       value: rawData?.tanggal || "-", 
       target: "Update Terakhir", 
       percent: 100, 
-      color: "blue",
       icon: <RiCalendarLine /> 
     },
     { 
-      label: "PENCAPAIAN RATA-RATA", 
-      value: `${totalCurrent?.persen || '0'}%`, 
-      target: "Terhadap Target RKAP", 
-      percent: parseNum(totalCurrent?.persen), 
-      color: "purple",
+      label: "PENCAPAIAN", 
+      value: `${activeStatSource?.persen || '0'}%`, 
+      target: selectedAfdeling === "SEMUA AFDELING" ? "Rata-rata Gabungan" : "Terhadap Target RKAP", 
+      percent: parseNum(activeStatSource?.persen), 
       icon: <RiLineChartLine /> 
     },
   ];
@@ -97,33 +117,33 @@ export default function ProduksiTab() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-emerald-200 transition-all duration-300">
-            <div>
-              <div className="flex justify-between items-start mb-4">
-                <div className={`w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-2xl text-emerald-600 group-hover:scale-110 transition-transform`}>
-                  {stat.icon}
+        {stats.map((stat, idx) => {
+          const colors = getStatusColor(stat.percent);
+          return (
+            <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-emerald-200 transition-all duration-300">
+              <div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className={`w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-2xl ${colors.text} group-hover:scale-110 transition-transform`}>
+                    {stat.icon}
+                  </div>
+                  <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg tracking-tighter shadow-sm ${colors.bg} text-white`}>
+                    {stat.percent}%
+                  </span>
                 </div>
-                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg tracking-tighter shadow-sm ${parseNum(stat.percent) >= 100 ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'}`}>
-                   {stat.percent}%
-                </span>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">{stat.value}</h3>
+                <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-tight">{stat.target}</p>
               </div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">{stat.value}</h3>
-              <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-tight">{stat.target}</p>
+              
+              <div className="mt-6 w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
+                  <div 
+                      className={`h-full rounded-full transition-all duration-1000 ease-out ${colors.bar}`}
+                      style={{ width: `${Math.min(parseNum(stat.percent), 100)}%` }}
+                  ></div>
+              </div>
             </div>
-            
-            <div className="mt-6 w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
-                <div 
-                    className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                        stat.color === 'emerald' ? 'bg-emerald-500' : 
-                        stat.color === 'blue' ? 'bg-blue-500' : 'bg-purple-500'
-                    }`}
-                    style={{ width: `${Math.min(parseNum(stat.percent), 100)}%` }}
-                ></div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Chart Section */}
@@ -140,6 +160,20 @@ export default function ProduksiTab() {
           </div>
           
           <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+            {/* Afdeling Filter */}
+            <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100 flex-1 md:flex-none">
+              <RiFilter3Line className="text-slate-400" />
+              <select 
+                value={selectedAfdeling}
+                onChange={(e) => setSelectedAfdeling(e.target.value)}
+                className="bg-transparent border-none text-[11px] font-black uppercase tracking-widest text-slate-600 focus:ring-0 cursor-pointer"
+              >
+                {afdelingList.map(afdeling => (
+                  <option key={afdeling} value={afdeling}>{afdeling}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex gap-1.5 bg-slate-50 p-1.5 rounded-2xl border border-slate-100 flex-1 md:flex-none">
               {[
                 { id: "hari_ini", label: "Harian" },
@@ -220,12 +254,15 @@ export default function ProduksiTab() {
               />
               <Bar 
                 dataKey="aktual" 
-                fill="#10b981" 
                 name="Realisasi" 
                 radius={[8, 8, 8, 8]} 
                 minPointSize={5}
                 className="hover:opacity-80 transition-opacity"
-              />
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getStatusColor(entry.persen).hex} />
+                ))}
+              </Bar>
               <Bar 
                 dataKey="target" 
                 fill="#e2e8f0" 
